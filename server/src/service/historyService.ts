@@ -1,4 +1,5 @@
 // TODO: Define a City class with name and id properties
+import { promises as fs } from 'fs';
 class City {
   name: string;
   id: string;

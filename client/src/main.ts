@@ -45,10 +45,12 @@ const fetchWeather = async (cityName: string) => {
 
   const weatherData = await response.json();
 
-  console.log('weatherData: ', weatherData);
-
-  renderCurrentWeather(weatherData[0]);
-  renderForecast(weatherData.slice(1));
+  if (weatherData && weatherData.length > 0) {
+    renderCurrentWeather(weatherData[0]);
+    renderForecast(weatherData.slice(1));
+  } else {
+    console.error('No weather data available');
+  }
 };
 
 const fetchSearchHistory = async () => {

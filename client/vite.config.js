@@ -6,6 +6,7 @@ export default defineConfig({
     port: 3000,
     open: true,
     proxy: {
+      '/api/weather/': 'https://api.openweathermap.org/data/2.5/',
       '/api': {
         target: 'http://localhost:3001',
         changeOrigin: true,

@@ -31,7 +31,7 @@ interface WeatherDataResponse {
 }
 
 export class WeatherService {
-  private baseURL = 'https://api.openweathermap.org/data/2.5';
+  private baseURL = 'https://api.openweathermap.org/data/2.5/';
   private apiKey = process.env.OPENWEATHER_API_KEY;
   private city: string;
 
@@ -40,11 +40,18 @@ export class WeatherService {
   }
 
   private async fetchLocationData(query: string): Promise<any> {
-    const response = await fetch(`${this.baseURL}/geo/1.0/direct?q=${query}&appid=${this.apiKey}`);
+    const url = `${this.baseURL}geo/1.0/direct?q=${query}&appid=${this.apiKey}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Error fetching location data: ${response.status}`);
+    }
     return response.json();
   }
 
   private destructureLocationData(locationData: any[]): Coordinates {
+    if (!locationData || locationData.length === 0) {
+      throw new Error('Location data is empty');
+    }
     const { lat, lon } = locationData[0];
     return { lat, lon };
   }

@@ -35,14 +35,9 @@ API Calls
 */
 
 const fetchWeather = async (cityName: string) => {
-  const response = await fetch('/api/weather/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ cityName }),
-  });
-
+  const apiEndpoint = 'https://api.openweathermap.org/data/2.5/forecast';
+  const apiKey = 'b9e3e19d3edb3f628b60e43251c5bc97';
+  const response = await fetch(`${apiEndpoint}?q=${cityName}&limit=1&appid=${apiKey}&units=imperial`);
   const weatherData = await response.json();
 
   if (weatherData && weatherData.length > 0) {
@@ -54,13 +49,37 @@ const fetchWeather = async (cityName: string) => {
 };
 
 const fetchSearchHistory = async () => {
-  const history = await fetch('/api/weather/history', {
-    method: 'GET',
-    headers: {
+  try {
+    const token = 'b9e3e19d3edb3f628b60e43251c5bc97';
+    console.log(`Using token: ${token}`);
+
+    const headers = {
       'Content-Type': 'application/json',
-    },
-  });
-  return history;
+      'Authorization': `${token}`,
+    };
+
+    const response = await fetch('/api/weather/history', {
+      method: 'GET',
+      headers,
+    });
+
+    console.log(`Response status: ${response.status}`);
+    console.log(`Response status text: ${response.statusText}`);
+
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    if (!data) {
+      throw new Error('No data received');
+    }
+
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 };
 
 const deleteCityFromHistory = async (id: string) => {

@@ -61,7 +61,7 @@ export class WeatherService {
   }
 
   private buildWeatherQuery(coordinates: Coordinates): string {
-    return `forecast?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${this.apiKey}`;
+    return `${this.baseURL}forecast?q=${this.city}&lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${this.apiKey}&units=imperial`;
   }
 
   private async fetchAndDestructureLocationData(): Promise<Coordinates> {

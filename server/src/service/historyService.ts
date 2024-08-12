@@ -14,7 +14,7 @@ class City {
 }
 
  export class HistoryService {
-  private filePath = path.join(path.dirname(fileURLToPath(import.meta.url)), 'searchHistory.json');
+  private filePath = path.join(path.dirname(fileURLToPath(import.meta.url)), 'db.json');
   private lock = false;
 
   private async read(): Promise<City[]> {
@@ -81,3 +81,5 @@ class City {
     }
   }
 }
+
+export default new HistoryService();

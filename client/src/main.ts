@@ -35,14 +35,20 @@ API Calls
 */
 
 const fetchWeather = async (cityName: string) => {
-  const apiEndpoint = 'https://api.openweathermap.org/data/2.5/forecast';
-  const apiKey = 'b9e3e19d3edb3f628b60e43251c5bc97';
-  const response = await fetch(`${apiEndpoint}?q=${cityName}&limit=1&appid=${apiKey}&units=imperial`);
+  // const apiEndpoint = 'https://api.openweathermap.org/data/2.5/forecast';
+  // const apiKey = 'b9e3e19d3edb3f628b60e43251c5bc97';
+  const response = await fetch('/api/weather/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ cityName })
+  });
   const weatherData = await response.json();
-
-  if (weatherData && weatherData.length > 0) {
-    renderCurrentWeather(weatherData[0]);
-    renderForecast(weatherData.slice(1));
+  console.log(weatherData);
+  if (weatherData && weatherData.forecast.length > 0) {
+    renderCurrentWeather(weatherData.current);
+    renderForecast(weatherData.forecast);
   } else {
     console.error('No weather data available');
   }
@@ -50,12 +56,9 @@ const fetchWeather = async (cityName: string) => {
 
 const fetchSearchHistory = async () => {
   try {
-    const token = 'b9e3e19d3edb3f628b60e43251c5bc97';
-    console.log(`Using token: ${token}`);
 
     const headers = {
       'Content-Type': 'application/json',
-      'Authorization': `${token}`,
     };
 
     const response = await fetch('/api/weather/history', {
@@ -98,7 +101,7 @@ Render Functions
 */
 
 const renderCurrentWeather = (currentWeather: any): void => {
-  const { city, date, icon, iconDescription, tempF, windSpeed, humidity } =
+  const { city, date, icon, iconDescription, temperature, windSpeed, humidity } =
     currentWeather;
 
   // convert the following to typescript
@@ -110,7 +113,7 @@ const renderCurrentWeather = (currentWeather: any): void => {
   weatherIcon.setAttribute('alt', iconDescription);
   weatherIcon.setAttribute('class', 'weather-img');
   heading.append(weatherIcon);
-  tempEl.textContent = `Temp: ${tempF}°F`;
+  tempEl.textContent = `Temp: ${temperature}°F`;
   windEl.textContent = `Wind: ${windSpeed} MPH`;
   humidityEl.textContent = `Humidity: ${humidity} %`;
 
@@ -139,7 +142,7 @@ const renderForecast = (forecast: any): void => {
 };
 
 const renderForecastCard = (forecast: any) => {
-  const { date, icon, iconDescription, tempF, windSpeed, humidity } = forecast;
+  const { date, icon, iconDescription, temperature, windSpeed, humidity } = forecast;
 
   const { col, cardTitle, weatherIcon, tempEl, windEl, humidityEl } =
     createForecastCard();
@@ -151,7 +154,7 @@ const renderForecastCard = (forecast: any) => {
     `https://openweathermap.org/img/w/${icon}.png`
   );
   weatherIcon.setAttribute('alt', iconDescription);
-  tempEl.textContent = `Temp: ${tempF} °F`;
+  tempEl.textContent = `Temp: ${temperature} °F`;
   windEl.textContent = `Wind: ${windSpeed} MPH`;
   humidityEl.textContent = `Humidity: ${humidity} %`;
 
@@ -161,7 +164,7 @@ const renderForecastCard = (forecast: any) => {
 };
 
 const renderSearchHistory = async (searchHistory: any) => {
-  const historyList = await searchHistory.json();
+  const historyList = await searchHistory;
 
   if (searchHistoryContainer) {
     searchHistoryContainer.innerHTML = '';

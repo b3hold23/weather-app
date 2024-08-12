@@ -31,7 +31,7 @@ interface WeatherDataResponse {
 }
 
 export class WeatherService {
-  private baseURL = 'https://api.openweathermap.org/data/2.5/';
+  private baseURL = 'https://api.openweathermap.org';
   private apiKey = process.env.OPENWEATHER_API_KEY;
   private city: string;
 
@@ -40,7 +40,7 @@ export class WeatherService {
   }
 
   private async fetchLocationData(query: string): Promise<any> {
-    const url = `${this.baseURL}geo/1.0/direct?q=${query}&appid=${this.apiKey}`;
+    const url = `${this.baseURL}/geo/1.0/direct?q=${query}&appid=${this.apiKey}`;
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Error fetching location data: ${response.status}`);
@@ -61,7 +61,7 @@ export class WeatherService {
   }
 
   private buildWeatherQuery(coordinates: Coordinates): string {
-    return `${this.baseURL}forecast?q=${this.city}&lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${this.apiKey}&units=imperial`;
+    return `${this.baseURL}/data/2.5/forecast?q=${this.city}&lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${this.apiKey}&units=imperial`;
   }
 
   private async fetchAndDestructureLocationData(): Promise<Coordinates> {
@@ -72,7 +72,7 @@ export class WeatherService {
 
   private async fetchWeatherData(coordinates: Coordinates): Promise<any> {
     const query = this.buildWeatherQuery(coordinates);
-    const response = await fetch(`${this.baseURL}/${query}`);
+    const response = await fetch(`${query}`);
     return response.json();
   }
 

@@ -35,8 +35,6 @@ API Calls
 */
 
 const fetchWeather = async (cityName: string) => {
-  // const apiEndpoint = 'https://api.openweathermap.org/data/2.5/forecast';
-  // const apiKey = 'b9e3e19d3edb3f628b60e43251c5bc97';
   const response = await fetch('/api/weather/', {
     method: 'POST',
     headers: {
@@ -100,9 +98,17 @@ Render Functions
 
 */
 
-const renderCurrentWeather = (currentWeather: any): void => {
+const renderCurrentWeather = (today: {
+  city: string;
+  date: string;
+  icon: string;
+  iconDescription: string;
+  temperature: number;
+  windSpeed: number;
+  humidity: number;
+}): void => {
   const { city, date, icon, iconDescription, temperature, windSpeed, humidity } =
-    currentWeather;
+    today;
 
   // convert the following to typescript
   heading.textContent = `${city} (${date})`;
@@ -125,7 +131,7 @@ const renderCurrentWeather = (currentWeather: any): void => {
 
 const renderForecast = (forecast: any): void => {
   const headingCol = document.createElement('div');
-  const heading = document.createElement('h4');
+  const heading = document.createElement('h2');
 
   headingCol.setAttribute('class', 'col-12');
   heading.textContent = '5-Day Forecast:';
@@ -142,12 +148,13 @@ const renderForecast = (forecast: any): void => {
 };
 
 const renderForecastCard = (forecast: any) => {
-  const { date, icon, iconDescription, temperature, windSpeed, humidity } = forecast;
+  const { date, icon, iconDescription, temperature, windSpeed, humidity, city } = forecast;
 
-  const { col, cardTitle, weatherIcon, tempEl, windEl, humidityEl } =
+  const { col, cardTitle, weatherIcon, tempEl, windEl, humidityEl, cityEl } =
     createForecastCard();
 
   // Add content to elements
+  cityEl.textContent = city;
   cardTitle.textContent = date;
   weatherIcon.setAttribute(
     'src',
@@ -197,6 +204,7 @@ const createForecastCard = () => {
   const tempEl = document.createElement('p');
   const windEl = document.createElement('p');
   const humidityEl = document.createElement('p');
+  const cityEl = document.createElement('P');
 
   col.append(card);
   card.append(cardBody);
@@ -223,6 +231,7 @@ const createForecastCard = () => {
     tempEl,
     windEl,
     humidityEl,
+    cityEl,
   };
 };
 

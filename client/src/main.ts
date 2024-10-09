@@ -40,47 +40,25 @@ const fetchWeather = async (cityName: string) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ cityName })
+    body: JSON.stringify({ cityName }),
   });
+
   const weatherData = await response.json();
-  console.log(weatherData);
-  if (weatherData && weatherData.forecast.length > 0) {
-    renderCurrentWeather(weatherData.current);
-    renderForecast(weatherData.forecast);
-  } else {
-    console.error('No weather data available');
-  }
+
+  console.log('weatherData: ', weatherData);
+
+  renderCurrentWeather(weatherData[0]);
+  renderForecast(weatherData.slice(1));
 };
 
 const fetchSearchHistory = async () => {
-  try {
-
-    const headers = {
+  const history = await fetch('/api/weather/history', {
+    method: 'GET',
+    headers: {
       'Content-Type': 'application/json',
-    };
-
-    const response = await fetch('/api/weather/history', {
-      method: 'GET',
-      headers,
-    });
-
-    console.log(`Response status: ${response.status}`);
-    console.log(`Response status text: ${response.statusText}`);
-
-    if (!response.ok) {
-      throw new Error(`Error ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    if (!data) {
-      throw new Error('No data received');
-    }
-
-    return data;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+    },
+  });
+  return history;
 };
 
 const deleteCityFromHistory = async (id: string) => {
@@ -98,17 +76,9 @@ Render Functions
 
 */
 
-const renderCurrentWeather = (today: {
-  city: string;
-  date: string;
-  icon: string;
-  iconDescription: string;
-  temperature: number;
-  windSpeed: number;
-  humidity: number;
-}): void => {
-  const { city, date, icon, iconDescription, temperature, windSpeed, humidity } =
-    today;
+const renderCurrentWeather = (currentWeather: any): void => {
+  const { city, date, icon, iconDescription, tempF, windSpeed, humidity } =
+    currentWeather;
 
   // convert the following to typescript
   heading.textContent = `${city} (${date})`;
@@ -119,7 +89,7 @@ const renderCurrentWeather = (today: {
   weatherIcon.setAttribute('alt', iconDescription);
   weatherIcon.setAttribute('class', 'weather-img');
   heading.append(weatherIcon);
-  tempEl.textContent = `Temp: ${temperature}°F`;
+  tempEl.textContent = `Temp: ${tempF}°F`;
   windEl.textContent = `Wind: ${windSpeed} MPH`;
   humidityEl.textContent = `Humidity: ${humidity} %`;
 
@@ -131,7 +101,7 @@ const renderCurrentWeather = (today: {
 
 const renderForecast = (forecast: any): void => {
   const headingCol = document.createElement('div');
-  const heading = document.createElement('h2');
+  const heading = document.createElement('h4');
 
   headingCol.setAttribute('class', 'col-12');
   heading.textContent = '5-Day Forecast:';
@@ -148,20 +118,19 @@ const renderForecast = (forecast: any): void => {
 };
 
 const renderForecastCard = (forecast: any) => {
-  const { date, icon, iconDescription, temperature, windSpeed, humidity, city } = forecast;
+  const { date, icon, iconDescription, tempF, windSpeed, humidity } = forecast;
 
-  const { col, cardTitle, weatherIcon, tempEl, windEl, humidityEl, cityEl } =
+  const { col, cardTitle, weatherIcon, tempEl, windEl, humidityEl } =
     createForecastCard();
 
   // Add content to elements
-  cityEl.textContent = city;
   cardTitle.textContent = date;
   weatherIcon.setAttribute(
     'src',
     `https://openweathermap.org/img/w/${icon}.png`
   );
   weatherIcon.setAttribute('alt', iconDescription);
-  tempEl.textContent = `Temp: ${temperature} °F`;
+  tempEl.textContent = `Temp: ${tempF} °F`;
   windEl.textContent = `Wind: ${windSpeed} MPH`;
   humidityEl.textContent = `Humidity: ${humidity} %`;
 
@@ -171,7 +140,7 @@ const renderForecastCard = (forecast: any) => {
 };
 
 const renderSearchHistory = async (searchHistory: any) => {
-  const historyList = await searchHistory;
+  const historyList = await searchHistory.json();
 
   if (searchHistoryContainer) {
     searchHistoryContainer.innerHTML = '';
@@ -204,7 +173,6 @@ const createForecastCard = () => {
   const tempEl = document.createElement('p');
   const windEl = document.createElement('p');
   const humidityEl = document.createElement('p');
-  const cityEl = document.createElement('P');
 
   col.append(card);
   card.append(cardBody);
@@ -231,7 +199,6 @@ const createForecastCard = () => {
     tempEl,
     windEl,
     humidityEl,
-    cityEl,
   };
 };
 

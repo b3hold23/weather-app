@@ -1,5 +1,17 @@
-// TODO: Define a City class with name and id properties
+import fs from 'fs';
+import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
+// TODO: Define a City class with name and id properties
+class City {
+  name: string;
+  id: string;
+  
+  constructor(name: string, id: string) {
+    this.name = name;
+    this.id = id;
+  }
+}
 // TODO: Complete the HistoryService class
 class HistoryService {
   // TODO: Define a read method that reads from the searchHistory.json file
